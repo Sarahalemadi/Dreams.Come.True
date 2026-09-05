@@ -1,0 +1,1456 @@
+<meta charset="UTF-8">
+<title>دفتر الأهداف</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800&family=Tajawal:wght@400;500;700&display=swap">
+<style>
+:root{
+  --sky-top:#F7D0BE;
+  --sky-mid:#EFA7AF;
+  --sky-warm:#E7C79E;
+  --rock-1:#8A6155;
+  --rock-2:#5E3D38;
+  --rock-3:#3B2523;
+  --ink:#2B2320;
+  --ink-soft:rgba(43,35,32,.64);
+  --ink-faint:rgba(43,35,32,.42);
+  --accent:#E4677B;
+  --accent-strong:#C94F65;
+  --accent-2:#C9714F;
+  --accent-soft:rgba(228,103,123,.18);
+  --glass:rgba(255,255,255,.55);
+  --glass-strong:rgba(255,255,255,.82);
+  --glass-soft:rgba(255,255,255,.34);
+  --glass-border:rgba(255,255,255,.62);
+  --dark-card:#20140F;
+  --dark-card-2:#2A1B15;
+  --dark-ink:#F5EBE3;
+  --dark-ink-soft:rgba(245,235,227,.66);
+  --line:rgba(43,35,32,.13);
+  --warn:#A8631F;
+  --warn-soft:rgba(168,99,31,.16);
+  --danger:#A8433D;
+  --danger-soft:rgba(168,67,61,.15);
+  --flame:#E4552F;
+  --flame-2:#F2934A;
+  --flame-soft:rgba(228,85,47,.2);
+  --shadow-glass:0 10px 34px rgba(58,28,22,.20), 0 1px 2px rgba(58,28,22,.08);
+  --shadow-dark:0 10px 30px rgba(0,0,0,.35);
+  color-scheme: light;
+}
+*{ box-sizing:border-box; }
+html,body{ height:100%; }
+body{
+  margin:0; color:var(--ink); background:var(--sky-warm);
+  font-family:'Tajawal','Segoe UI',sans-serif; direction:rtl;
+  font-variant-numeric:tabular-nums; position:relative;
+}
+h1,h2,h3{ font-family:'Cairo','Tajawal',sans-serif; text-wrap:balance; margin:0; }
+button{ font-family:inherit; }
+input,select,textarea{ font-family:inherit; color:inherit; }
+::selection{ background:var(--accent-soft); }
+
+/* ---------- decorative background ---------- */
+.bg-scene{ position:fixed; inset:0; z-index:-2; overflow:hidden; }
+.bg-sky{ position:absolute; inset:0; background:linear-gradient(175deg, var(--sky-top) 0%, var(--sky-mid) 48%, var(--sky-warm) 82%); }
+.bg-blob{ position:absolute; border-radius:50%; filter:blur(46px); opacity:.55; background:radial-gradient(circle at 35% 35%, #FBC7CE, var(--accent) 70%); width:340px; height:340px; top:-60px; left:-80px; }
+.bg-blob.two{ width:220px; height:220px; top:12%; right:-60px; opacity:.4; background:radial-gradient(circle at 40% 40%, #FCE0C6, var(--accent-2) 75%); filter:blur(38px); }
+.bg-ridge{ position:absolute; left:-5%; right:-5%; bottom:-2%; height:46%; }
+.bg-ridge.r1{ background:var(--rock-1); opacity:.9; clip-path:polygon(0% 60%, 10% 40%, 22% 55%, 34% 30%, 48% 50%, 60% 25%, 74% 48%, 88% 32%, 100% 55%, 100% 100%, 0% 100%); }
+.bg-ridge.r2{ height:34%; background:var(--rock-2); opacity:.92; clip-path:polygon(0% 70%, 14% 45%, 28% 62%, 42% 38%, 56% 60%, 70% 40%, 86% 64%, 100% 46%, 100% 100%, 0% 100%); }
+.bg-ridge.r3{ height:20%; background:var(--rock-3); clip-path:polygon(0% 80%, 18% 55%, 36% 72%, 54% 50%, 72% 74%, 90% 52%, 100% 68%, 100% 100%, 0% 100%); }
+
+/* ---------- shell ---------- */
+.app{ direction:rtl; max-width:760px; margin:0 auto; padding:18px 16px 118px; position:relative; }
+.faint{ color:var(--ink-faint); }
+.muted{ color:var(--ink-soft); }
+
+/* ---------- glass primitives ---------- */
+.glass{ background:var(--glass); backdrop-filter:blur(22px) saturate(160%); -webkit-backdrop-filter:blur(22px) saturate(160%); border:1px solid var(--glass-border); border-radius:22px; box-shadow:var(--shadow-glass); }
+.glass-soft{ background:var(--glass-soft); backdrop-filter:blur(14px) saturate(150%); -webkit-backdrop-filter:blur(14px) saturate(150%); border:1px solid var(--glass-border); border-radius:18px; }
+.dark-card{ background:linear-gradient(155deg, var(--dark-card), var(--dark-card-2)); color:var(--dark-ink); border-radius:24px; box-shadow:var(--shadow-dark); position:relative; overflow:hidden; }
+.dark-card .muted{ color:var(--dark-ink-soft); }
+
+/* ---------- hero ---------- */
+.hero{ display:flex; align-items:center; gap:16px; padding:20px 20px; margin-bottom:16px; position:relative; overflow:hidden; }
+.hero .blob-deco{ position:absolute; width:130px; height:130px; border-radius:50%; background:radial-gradient(circle at 35% 35%, #FDE3E6, var(--accent) 75%); filter:blur(4px); opacity:.55; left:-30px; top:-30px; }
+.hero .txt{ flex:1; position:relative; z-index:1; }
+.hero .month{ font-size:26px; font-weight:800; color:var(--ink); line-height:1.1; }
+.hero .date{ font-size:13px; color:var(--ink-soft); margin-top:3px; }
+.hero .motto{ font-size:13.5px; color:var(--accent-strong); font-weight:700; margin-top:8px; }
+.hero .tag{ font-size:11.5px; color:var(--ink-faint); margin-top:4px; }
+.ring-wrap{ position:relative; z-index:1; flex:none; display:flex; flex-direction:column; align-items:center; gap:2px; }
+.ring-wrap .n{ font-size:12.5px; font-weight:700; }
+.ring-wrap .l{ font-size:9.5px; color:var(--ink-faint); }
+
+section.panel[hidden]{ display:none; }
+
+/* ---------- generic controls ---------- */
+.banner{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:11px 16px; font-size:12.5px; margin-bottom:14px; color:var(--ink-soft); }
+.banner button{ background:none; border:0; color:var(--accent-strong); text-decoration:underline; cursor:pointer; font-size:12.5px; }
+.row-between{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.iconbtn{ display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:11px; border:1px solid transparent; background:rgba(255,255,255,.4); color:var(--ink-soft); cursor:pointer; flex:none; }
+.iconbtn:hover{ background:rgba(255,255,255,.75); color:var(--ink); }
+.iconbtn svg{ width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:1.8; }
+.iconbtn.danger:hover{ background:var(--danger-soft); color:var(--danger); }
+.iconbtn.filled{ background:var(--ink); color:#fff; }
+.iconbtn.filled svg{ fill:currentColor; stroke:none; }
+.btn{ display:inline-flex; align-items:center; gap:6px; border:1px solid var(--glass-border); background:rgba(255,255,255,.5); color:var(--ink); border-radius:13px; padding:9px 15px; font-size:13.5px; font-weight:700; cursor:pointer; }
+.btn:hover{ background:rgba(255,255,255,.8); }
+.btn.primary{ background:var(--ink); border-color:var(--ink); color:#fff; }
+.btn.primary:hover{ background:#000; }
+.btn.flame{ background:var(--flame); border-color:var(--flame); color:#fff; }
+.btn.flame:hover{ background:#C7431F; }
+.btn svg{ width:15px; height:15px; stroke:currentColor; fill:none; stroke-width:2; }
+.dot{ width:12px; height:12px; border-radius:50%; flex:none; box-shadow:inset 0 0 0 1px rgba(0,0,0,.1); }
+.chip{ display:inline-flex; align-items:center; font-size:11px; padding:3px 9px; border-radius:999px; background:rgba(255,255,255,.55); color:var(--ink-soft); border:1px solid var(--glass-border); white-space:nowrap; }
+.chip.on{ background:var(--ink); color:#fff; border-color:transparent; }
+.chip.flame{ background:var(--flame-soft); color:var(--flame); border-color:transparent; }
+.field{ display:flex; flex-direction:column; gap:4px; }
+.field label{ font-size:11.5px; color:var(--ink-soft); }
+.field input[type=text],.field input[type=number],.field select,.field textarea{ background:rgba(255,255,255,.55); border:1px solid var(--glass-border); border-radius:12px; padding:9px 11px; font-size:13.5px; color:var(--ink); }
+.field textarea{ resize:vertical; min-height:52px; font-family:inherit; }
+.field input:focus,.field select:focus,.field textarea:focus{ outline:2px solid var(--accent); outline-offset:1px; }
+button:focus-visible,input:focus-visible,.chk:focus-visible{ outline:2px solid var(--accent-strong); outline-offset:2px; }
+.swatches{ display:flex; flex-wrap:wrap; gap:7px; }
+.swatch{ width:24px; height:24px; border-radius:50%; cursor:pointer; border:2px solid transparent; }
+.swatch.picked{ border-color:var(--ink); }
+.form-grid{ display:grid; grid-template-columns:1fr; gap:10px; padding:16px; border-top:1px dashed var(--line); }
+.form-actions{ display:flex; gap:8px; }
+.empty{ padding:26px 16px; text-align:center; color:var(--ink-faint); font-size:13px; }
+.chk{ width:20px; height:20px; border-radius:7px; border:1.6px solid var(--glass-border); background:rgba(255,255,255,.4); cursor:pointer; flex:none; display:inline-flex; align-items:center; justify-content:center; }
+.chk svg{ width:13px; height:13px; stroke:#fff; fill:none; stroke-width:3; opacity:0; }
+.chk.done{ background:var(--accent); border-color:var(--accent); }
+.chk.done svg{ opacity:1; }
+.history-row{ display:flex; flex-wrap:wrap; gap:5px; align-items:center; padding:2px 0 8px; }
+.history-label{ font-size:10.5px; color:var(--ink-faint); }
+
+/* ---------- section blocks ---------- */
+.section-block{ padding:14px 16px 6px; margin-bottom:14px; }
+.section-block .section-title{ font-size:12.5px; font-weight:700; color:var(--ink-soft); margin-bottom:8px; }
+
+/* ---------- goals tab ---------- */
+.month-nav{ display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+.month-nav .label{ font-family:'Cairo'; font-size:16px; font-weight:700; min-width:110px; text-align:center; }
+.goal-list{ display:flex; flex-direction:column; gap:10px; }
+.goal-card{ overflow:hidden; }
+.goal-head{ display:flex; align-items:center; gap:10px; padding:14px 16px; cursor:pointer; }
+.goal-head .title{ font-weight:700; font-size:14.5px; flex:1; }
+.goal-head .core-badge{ font-size:10.5px; color:var(--warn); background:var(--warn-soft); border-radius:999px; padding:2px 9px; }
+.goal-head .chev{ transition:transform .15s; color:var(--ink-faint); }
+.goal-head .chev svg{ width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:2; }
+.goal-card.open .chev{ transform:rotate(180deg); }
+.goal-body{ padding:0 16px 16px; display:none; }
+.goal-card.open .goal-body{ display:block; }
+.task-row{ padding:10px 0; border-top:1px solid var(--line); }
+.task-row .line1{ display:flex; align-items:center; gap:9px; }
+.task-row .name{ flex:1; font-size:13.5px; }
+.task-actions{ display:flex; gap:2px; }
+.addline{ display:flex; align-items:center; gap:6px; color:var(--ink); font-weight:700; font-size:13px; padding:11px 0 2px; cursor:pointer; background:none; border:0; }
+.addline svg{ width:15px; height:15px; stroke:currentColor; fill:none; stroke-width:2; }
+
+/* ---------- daily tab ---------- */
+.progress-card{ display:flex; align-items:center; gap:18px; padding:20px; margin-bottom:16px; }
+.progress-card .txt .n{ font-family:'Cairo'; font-size:24px; font-weight:800; }
+.check-list{ display:flex; flex-direction:column; gap:8px; }
+.check-row{ display:flex; align-items:center; gap:11px; padding:12px 14px; }
+.check-row .name{ flex:1; font-size:13.5px; }
+.check-row .name.done{ color:var(--ink-faint); text-decoration:line-through; }
+.check-row .time{ font-size:11px; color:var(--ink-faint); }
+.mini-add{ display:flex; gap:8px; padding:12px 14px; margin-top:10px; }
+.mini-add input{ flex:1; background:rgba(255,255,255,.55); border:1px solid var(--glass-border); border-radius:12px; padding:8px 11px; font-size:13px; color:var(--ink); }
+
+/* ---------- performance tab ---------- */
+.year-nav{ display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+.tracker-card{ padding:16px; margin-bottom:12px; }
+.tracker-head{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+.tracker-head .name{ font-weight:700; font-size:14px; flex:1; cursor:default; }
+.tracker-head .stat{ font-size:11.5px; color:var(--ink-faint); }
+.grid-wrap{ overflow-x:auto; padding-bottom:4px; }
+.year-grid{ display:grid; grid-template-rows:repeat(7,9px); grid-auto-flow:column; grid-auto-columns:9px; gap:3px; }
+.year-grid .cell{ width:9px; height:9px; border-radius:2.5px; background:rgba(43,35,32,.08); }
+.month-ticks{ display:grid; grid-auto-flow:column; gap:3px; font-size:9.5px; color:var(--ink-faint); margin-bottom:4px; height:12px; }
+.legend-line{ display:flex; align-items:flex-start; gap:9px; margin-top:10px; padding-top:10px; border-top:1px dashed var(--line); }
+.legend-line .dot{ margin-top:2px; }
+.legend-line .txt{ font-size:12px; color:var(--ink-soft); }
+.legend-line .txt b{ color:var(--ink); font-weight:700; }
+
+/* ---------- hours tab ---------- */
+.daybar{ display:flex; width:100%; height:36px; border-radius:14px; overflow:hidden; margin-bottom:14px; box-shadow:var(--shadow-glass); }
+.daybar .seg{ height:100%; }
+.block-row{ display:flex; align-items:center; gap:10px; padding:11px 14px; }
+.block-row input[type=text]{ flex:1; background:rgba(255,255,255,.5); border:1px solid var(--glass-border); border-radius:11px; padding:7px 10px; font-size:13px; color:var(--ink); }
+.block-row input[type=number]{ width:64px; background:rgba(255,255,255,.5); border:1px solid var(--glass-border); border-radius:11px; padding:7px 8px; font-size:13px; color:var(--ink); text-align:center; }
+.total-row{ display:flex; justify-content:space-between; padding:14px 16px; font-size:13px; margin-top:10px; }
+.total-row b{ font-family:'Cairo'; font-size:15px; }
+.needs-table{ width:100%; border-collapse:collapse; font-size:13px; }
+.needs-table td{ padding:9px 14px; border-top:1px solid var(--line); }
+.needs-table td:last-child{ text-align:left; color:var(--ink-soft); white-space:nowrap; }
+.two-col{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+@media (max-width:640px){ .two-col{ grid-template-columns:1fr; } .hero .month{ font-size:22px; } }
+
+/* ---------- phoenix tab ---------- */
+.phx-hero{ padding:22px 20px; margin-bottom:16px; }
+.phx-hero::before{ content:''; position:absolute; width:200px; height:200px; border-radius:50%; background:radial-gradient(circle, var(--flame), transparent 70%); opacity:.35; filter:blur(20px); left:-50px; top:-60px; }
+.phx-hero .row{ display:flex; align-items:center; gap:10px; position:relative; z-index:1; }
+.phx-hero h2{ font-size:19px; font-weight:800; }
+.phx-hero input.mission{ width:100%; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); color:var(--dark-ink); border-radius:12px; padding:9px 12px; font-size:12.5px; margin-top:10px; position:relative; z-index:1; }
+.phx-hero .notif-btn{ margin-top:12px; position:relative; z-index:1; }
+.notif-chip{ display:inline-flex; align-items:center; gap:6px; font-size:12px; padding:7px 13px; border-radius:999px; background:rgba(255,255,255,.1); color:var(--dark-ink-soft); border:1px solid rgba(255,255,255,.18); }
+.notif-chip svg{ width:14px; height:14px; stroke:currentColor; fill:none; stroke-width:1.8; }
+.exercise-card{ padding:16px; margin-bottom:10px; }
+.exercise-head{ display:flex; align-items:flex-start; gap:11px; }
+.exercise-head .name{ font-weight:700; font-size:14px; }
+.exercise-head .desc{ font-size:12px; color:var(--ink-soft); margin-top:3px; }
+.exercise-meta{ display:flex; gap:6px; margin-top:8px; flex-wrap:wrap; }
+.timer-box{ margin-top:12px; padding-top:12px; border-top:1px solid var(--line); display:flex; align-items:center; gap:10px; }
+.timer-clock{ font-family:'Cairo'; font-size:17px; font-weight:700; min-width:56px; }
+.timer-bar-wrap{ flex:1; height:6px; border-radius:99px; background:rgba(43,35,32,.1); overflow:hidden; }
+.timer-bar{ height:100%; background:var(--flame); width:0%; transition:width .2s linear; }
+.timer-controls{ display:flex; gap:4px; }
+
+/* ---------- vision board ---------- */
+.vb-board{ position:relative; min-height:440px; padding:0; overflow:hidden; }
+.vb-board::before{ content:'ابدأ بإضافة أول صورة أو عبارة ✨'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:var(--ink-faint); font-size:13px; pointer-events:none; opacity:0; transition:opacity .2s; }
+.vb-board.empty::before{ opacity:1; }
+.vb-card{ position:absolute; cursor:grab; user-select:none; touch-action:none; box-shadow:0 10px 24px rgba(58,28,22,.22); border-radius:16px; box-sizing:border-box; }
+.vb-card.dragging{ cursor:grabbing; box-shadow:0 16px 34px rgba(58,28,22,.32); z-index:999 !important; }
+.vb-card.img{ padding:0; overflow:hidden; }
+.vb-card.img img{ width:100%; height:100%; object-fit:cover; border-radius:16px; display:block; pointer-events:none; }
+.vb-card.quote{ padding:16px 15px; background:var(--glass-strong); border:1px solid var(--glass-border); font-family:'Cairo'; font-size:13.5px; font-weight:700; color:var(--ink); line-height:1.6; text-align:center; overflow:hidden; display:flex; align-items:center; justify-content:center; }
+.vb-card .vb-del{ position:absolute; top:-8px; left:-8px; width:24px; height:24px; border-radius:50%; background:var(--danger); color:#fff; border:2px solid #fff; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:14px; line-height:1; opacity:0; transition:opacity .15s; z-index:2; }
+.vb-card .vb-resize{ position:absolute; bottom:-7px; right:-7px; width:24px; height:24px; border-radius:50%; background:var(--ink); color:#fff; border:2px solid #fff; display:flex; align-items:center; justify-content:center; cursor:nwse-resize; opacity:0; transition:opacity .15s; z-index:2; touch-action:none; }
+.vb-card .vb-resize svg{ width:12px; height:12px; stroke:currentColor; fill:none; stroke-width:2.2; }
+.vb-card:hover .vb-del,.vb-card:focus-within .vb-del,.vb-card:hover .vb-resize,.vb-card:focus-within .vb-resize{ opacity:1; }
+
+/* ---------- bottom nav ---------- */
+.bottom-nav{ position:fixed; left:50%; transform:translateX(-50%); bottom:16px; z-index:20; display:flex; gap:2px; padding:7px; border-radius:26px; background:rgba(255,255,255,.62); backdrop-filter:blur(24px) saturate(170%); -webkit-backdrop-filter:blur(24px) saturate(170%); border:1px solid var(--glass-border); box-shadow:var(--shadow-glass); max-width:94vw; overflow-x:auto; }
+.nav-btn{ display:flex; flex-direction:column; align-items:center; gap:2px; padding:8px 13px; border:0; border-radius:19px; background:transparent; color:var(--ink-soft); cursor:pointer; font-size:10px; font-weight:700; white-space:nowrap; }
+.nav-btn svg{ width:19px; height:19px; stroke:currentColor; fill:none; stroke-width:1.8; }
+.nav-btn.active{ background:var(--ink); color:#fff; }
+.nav-btn.phx.active{ background:var(--flame); color:#fff; }
+.nav-btn.phx svg{ color:var(--flame); }
+.nav-btn.phx.active svg{ color:#fff; }
+
+/* ---------- toast ---------- */
+#toast{ position:fixed; top:16px; left:50%; transform:translateX(-50%) translateY(-140%); z-index:50; background:var(--dark-card); color:var(--dark-ink); padding:12px 20px; border-radius:16px; font-size:13px; font-weight:700; box-shadow:var(--shadow-dark); transition:transform .35s ease; max-width:90vw; text-align:center; }
+#toast.show{ transform:translateX(-50%) translateY(0); }
+</style>
+
+<div class="bg-scene" aria-hidden="true">
+  <div class="bg-sky"></div>
+  <div class="bg-blob"></div>
+  <div class="bg-blob two"></div>
+  <div class="bg-ridge r1"></div>
+  <div class="bg-ridge r2"></div>
+  <div class="bg-ridge r3"></div>
+</div>
+
+<svg style="display:none">
+  <symbol id="ic-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="0.8" fill="currentColor"/></symbol>
+  <symbol id="ic-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M8.5 12.5l2.4 2.4L15.7 9.6"/></symbol>
+  <symbol id="ic-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1.2"/><rect x="14" y="4" width="6" height="6" rx="1.2"/><rect x="4" y="14" width="6" height="6" rx="1.2"/><rect x="14" y="14" width="6" height="6" rx="1.2"/></symbol>
+  <symbol id="ic-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3.2 2"/></symbol>
+  <symbol id="ic-flame" viewBox="0 0 24 24"><path d="M12 21c-4 0-6.5-2.6-6.5-6 0-3 1.8-4.6 2.3-7.4.3 1.6 1.4 2.4 1.4 2.4-.4-3 1-5 3-6.5-.6 2.3.2 3.6 1.3 4.8 1.6 1.7 2.5 3.3 2.5 5.7 0 3.4-2.5 7-6 7z"/></symbol>
+  <symbol id="ic-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="ic-trash" viewBox="0 0 24 24"><path d="M5 7h14M9 7V5.2a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1V7M7 7l.8 12.2a1 1 0 0 0 1 .8h6.4a1 1 0 0 0 1-.8L17 7"/></symbol>
+  <symbol id="ic-pencil" viewBox="0 0 24 24"><path d="M15.6 4.9l3.5 3.5L8.4 19.1l-4 .8.8-4z"/></symbol>
+  <symbol id="ic-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+  <symbol id="ic-prev" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+  <symbol id="ic-next" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
+  <symbol id="ic-play" viewBox="0 0 24 24"><path d="M8 5l11 7-11 7z" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="ic-pause" viewBox="0 0 24 24"><rect x="7" y="5" width="4" height="14" fill="currentColor" stroke="none"/><rect x="13" y="5" width="4" height="14" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="ic-reset" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 1 2.6 5.9M4 12v5h5"/></symbol>
+  <symbol id="ic-bell" viewBox="0 0 24 24"><path d="M6 10a6 6 0 0 1 12 0c0 4 1.5 5.5 1.5 5.5h-15S6 14 6 10z"/><path d="M10 18a2 2 0 0 0 4 0"/></symbol>
+  <symbol id="ic-image" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2.2"/><circle cx="9" cy="10" r="1.6"/><path d="M4 16.5l5-5 4 4 3-3 4 4"/></symbol>
+  <symbol id="ic-quote" viewBox="0 0 24 24"><path d="M7 8.5c-2 0-3.2 1.5-3.2 3.6 0 2 1.2 3.4 3 3.4h.6v2.5H5.2C3 17.8 2 15.6 2 12.8 2 9.3 4.2 7 7.6 7z" fill="currentColor" stroke="none"/><path d="M16.4 8.5c-2 0-3.2 1.5-3.2 3.6 0 2 1.2 3.4 3 3.4h.6v2.5h-2.2c-2.2 0-3.2-2.2-3.2-5 0-3.5 2.2-5.8 5.6-5.8z" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="ic-resize" viewBox="0 0 24 24"><path d="M20 4L4 20M20 11v9h-9M20 20L11 11"/></symbol>
+</svg>
+
+<div id="toast"></div>
+
+<div class="app" dir="rtl" lang="ar">
+  <header class="hero glass">
+    <div class="blob-deco"></div>
+    <div class="txt">
+      <div class="date faint" id="todayPill"></div>
+      <div class="month" id="heroMonth"></div>
+      <div class="motto">تتحقق الأحلام إن عشنا لها</div>
+      <div class="tag">بسم الله توكلت على الله</div>
+    </div>
+    <div class="ring-wrap">
+      <svg width="52" height="52" viewBox="0 0 52 52">
+        <circle cx="26" cy="26" r="21" fill="none" stroke="rgba(43,35,32,.12)" stroke-width="6"/>
+        <circle id="heroRing" cx="26" cy="26" r="21" fill="none" stroke="var(--accent)" stroke-width="6" stroke-linecap="round" transform="rotate(-90 26 26)"/>
+      </svg>
+      <div class="n" id="heroPct">0%</div>
+      <div class="l">اليوم</div>
+    </div>
+  </header>
+
+  <div id="seedBanner" class="banner glass-soft" hidden>
+    <span>هذه بيانات تجريبية للبدء — عدّلها أو احذفها كما تحب.</span>
+    <button id="dismissBanner">إخفاء</button>
+  </div>
+
+  <section class="panel" data-tab="goals" hidden>
+    <div class="month-nav">
+      <button class="iconbtn glass-soft" id="prevMonth"><svg><use href="#ic-prev"/></svg></button>
+      <div class="label" id="monthLabel"></div>
+      <button class="iconbtn glass-soft" id="nextMonth"><svg><use href="#ic-next"/></svg></button>
+      <div style="flex:1"></div>
+      <button class="btn primary" id="addGoalBtn"><svg><use href="#ic-plus"/></svg>هدف جديد</button>
+    </div>
+    <div id="goalForm"></div>
+    <div class="goal-list" id="goalList"></div>
+  </section>
+
+  <section class="panel" data-tab="daily" hidden>
+    <div class="dark-card progress-card">
+      <svg width="58" height="58" viewBox="0 0 58 58">
+        <circle cx="29" cy="29" r="24" fill="none" stroke="rgba(255,255,255,.14)" stroke-width="7"/>
+        <circle id="ringFg" cx="29" cy="29" r="24" fill="none" stroke="var(--accent)" stroke-width="7" stroke-linecap="round" transform="rotate(-90 29 29)"/>
+      </svg>
+      <div class="txt"><div class="n" id="progressN">0%</div><div class="muted" style="font-size:12px">أُنجز اليوم</div></div>
+    </div>
+
+    <div class="glass section-block">
+      <div class="section-title">من أهداف هذا الشهر (اليومية)</div>
+      <div class="check-list" id="dailyFromGoals"></div>
+    </div>
+
+    <div class="glass section-block">
+      <div class="section-title">🔥 تمارين العنقاء اليوم</div>
+      <div class="check-list" id="dailyPhoenix"></div>
+    </div>
+
+    <div class="glass section-block">
+      <div class="section-title">أهداف يومية إضافية</div>
+      <div class="check-list" id="dailyExtraList"></div>
+      <div class="mini-add">
+        <input type="text" id="extraInput" placeholder="أضف هدفاً يومياً إضافياً…">
+        <button class="btn primary" id="extraAddBtn"><svg><use href="#ic-plus"/></svg></button>
+      </div>
+    </div>
+
+    <div class="glass section-block">
+      <div class="section-title">العادات</div>
+      <div class="check-list" id="dailyHabits"></div>
+    </div>
+  </section>
+
+  <section class="panel" data-tab="phoenix" hidden>
+    <div class="dark-card phx-hero">
+      <div class="row">
+        <svg width="22" height="22" viewBox="0 0 24 24" style="color:var(--flame-2);flex:none"><use href="#ic-flame" fill="currentColor"/></svg>
+        <h2>هدف العنقاء</h2>
+      </div>
+      <input class="mission" id="phoenixMission" type="text" placeholder="اكتب رسالتك التحفيزية…">
+      <div class="notif-btn" id="notifBox"></div>
+    </div>
+    <div class="row-between" style="margin-bottom:12px">
+      <span class="faint" style="font-size:12px">تمارينك — يومية أو أسبوعية، مع مؤقّت لكل تمرين</span>
+      <button class="btn flame" id="addExerciseBtn"><svg><use href="#ic-plus"/></svg>تمرين جديد</button>
+    </div>
+    <div id="exerciseForm"></div>
+    <div id="exerciseList"></div>
+  </section>
+
+  <section class="panel" data-tab="perf" hidden>
+    <div class="year-nav">
+      <button class="iconbtn glass-soft" id="prevYear"><svg><use href="#ic-prev"/></svg></button>
+      <div class="label" style="font-family:'Cairo';font-size:16px;font-weight:700" id="yearLabel"></div>
+      <button class="iconbtn glass-soft" id="nextYear"><svg><use href="#ic-next"/></svg></button>
+      <div style="flex:1"></div>
+      <button class="btn primary" id="addHabitBtn"><svg><use href="#ic-plus"/></svg>عادة جديدة</button>
+    </div>
+    <div id="habitForm"></div>
+    <div class="faint" style="font-size:12px;margin-bottom:12px">أهدافك الأساسية وهدف العنقاء والعادات على مدار السنة — كل مربع يوم، وتوهج اللون يعني إنجازاً كاملاً.</div>
+    <div id="trackerList"></div>
+  </section>
+
+  <section class="panel" data-tab="hours" hidden>
+    <div class="two-col">
+      <div>
+        <div class="section-title" style="margin-bottom:8px;font-size:12.5px;color:var(--ink-soft);font-weight:700">تقسيم يومك (٢٤ ساعة)</div>
+        <div class="daybar" id="dayBar"></div>
+        <div class="glass" id="blockList"></div>
+        <div class="glass mini-add">
+          <input type="text" id="blockLabelInput" placeholder="اسم النشاط (مثال: مذاكرة)">
+          <input type="number" id="blockHoursInput" min="0" step="0.25" style="width:70px;background:rgba(255,255,255,.5);border:1px solid var(--glass-border);border-radius:11px;padding:7px 8px;text-align:center" placeholder="ساعات">
+          <button class="btn primary" id="blockAddBtn"><svg><use href="#ic-plus"/></svg></button>
+        </div>
+        <div class="glass total-row" id="totalRow"></div>
+      </div>
+      <div>
+        <div class="section-title" style="margin-bottom:8px;font-size:12.5px;color:var(--ink-soft);font-weight:700">احتياجك الزمني اليومي</div>
+        <div class="glass">
+          <table class="needs-table" id="needsTable"></table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" data-tab="board">
+    <div class="row-between" style="margin-bottom:12px;flex-wrap:wrap;gap:10px">
+      <span class="faint" style="font-size:12px">لوحة أحلامك — صور وعبارات، رتّبها بسحبها بحرية</span>
+      <div style="display:flex;gap:8px">
+        <input type="file" id="vbImageInput" accept="image/*" hidden>
+        <button class="btn" id="vbAddImageBtn"><svg><use href="#ic-image"/></svg>صورة</button>
+        <button class="btn primary" id="vbAddQuoteBtn"><svg><use href="#ic-quote"/></svg>عبارة</button>
+      </div>
+    </div>
+    <div id="quoteForm"></div>
+    <div class="glass vb-board" id="vbBoard"></div>
+  </section>
+</div>
+
+<nav class="bottom-nav">
+  <button class="nav-btn active" data-tab="board"><svg><use href="#ic-image"/></svg>الأحلام</button>
+  <button class="nav-btn" data-tab="goals"><svg><use href="#ic-target"/></svg>الأهداف</button>
+  <button class="nav-btn" data-tab="daily"><svg><use href="#ic-check"/></svg>يومي</button>
+  <button class="nav-btn phx" data-tab="phoenix"><svg><use href="#ic-flame"/></svg>العنقاء</button>
+  <button class="nav-btn" data-tab="perf"><svg><use href="#ic-grid"/></svg>الأداء</button>
+  <button class="nav-btn" data-tab="hours"><svg><use href="#ic-clock"/></svg>الساعات</button>
+</nav>
+
+<script>
+(function(){
+"use strict";
+
+/* ================= utilities ================= */
+const AR_MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+const AR_WEEKDAYS_LONG = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+const PALETTE = ['#C9714F','#5E6E8C','#A8631F','#A8433D','#7A5568','#5E7A4A','#C9714F','#3E7CA6','#8E5A3C','#4C5B66'];
+const PHOENIX_COLOR = '#E4552F';
+
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function uid(){ return 'x'+Date.now().toString(36)+Math.random().toString(36).slice(2,8); }
+function pad2(n){ return String(n).padStart(2,'0'); }
+function dateKey(d){ return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate()); }
+function monthKey(d){ return d.getFullYear()+'-'+pad2(d.getMonth()+1); }
+function todayDate(){ const d=new Date(); d.setHours(0,0,0,0); return d; }
+function weekStartDate(d){ const nd=new Date(d); const dow=(nd.getDay()+1)%7; nd.setDate(nd.getDate()-dow); nd.setHours(0,0,0,0); return nd; }
+function bucketDateFor(t){ return t.isDaily ? dateKey(today) : dateKey(weekStartDate(today)); }
+function fmtMin(m){
+  m = Math.round(m||0);
+  if(m<=0) return '—';
+  if(m<60) return m+' د';
+  const h=Math.floor(m/60), r=m%60;
+  return r? (h+' س '+r+' د') : (h+' س');
+}
+function fmtClock(sec){ sec=Math.max(0,Math.round(sec)); return Math.floor(sec/60)+':'+pad2(sec%60); }
+function hexToRgb(hex){ const n=parseInt(hex.slice(1),16); return [(n>>16)&255,(n>>8)&255,n&255]; }
+function withAlpha(hex,a){ const [r,g,b]=hexToRgb(hex); return `rgba(${r},${g},${b},${a})`; }
+
+const today = todayDate();
+document.getElementById('todayPill').textContent = AR_WEEKDAYS_LONG[new Date().getDay()]+'، '+today.getDate()+' '+AR_MONTHS[today.getMonth()]+' '+today.getFullYear();
+document.getElementById('heroMonth').textContent = AR_MONTHS[today.getMonth()]+' '+today.getFullYear();
+
+let toastTimer=null;
+function showToast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>el.classList.remove('show'), 4500);
+}
+function beep(){
+  try{
+    const Ctx = window.AudioContext||window.webkitAudioContext;
+    const ctx = new Ctx();
+    const o = ctx.createOscillator(); const g = ctx.createGain();
+    o.type='sine'; o.frequency.value=880;
+    o.connect(g); g.connect(ctx.destination);
+    const t = ctx.currentTime;
+    for(let i=0;i<3;i++){
+      g.gain.setValueAtTime(0.0001, t+i*0.35);
+      g.gain.exponentialRampToValueAtTime(0.3, t+i*0.35+0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t+i*0.35+0.3);
+    }
+    o.start(t); o.stop(t+1.1);
+  }catch(e){}
+}
+
+/* ================= storage layer (db capability, falls back to localStorage) ================= */
+const LOCAL_PREFIX = 'goalsNotebook:';
+function localGetArr(key){ try{ return JSON.parse(localStorage.getItem(LOCAL_PREFIX+key)||'[]'); }catch(e){ return []; } }
+function localSetArr(key,arr){ try{ localStorage.setItem(LOCAL_PREFIX+key, JSON.stringify(arr)); }catch(e){} }
+function localGetDoc(key,fallback){ try{ const v=localStorage.getItem(LOCAL_PREFIX+key); return v?JSON.parse(v):fallback; }catch(e){ return fallback; } }
+function localSetDoc(key,val){ try{ localStorage.setItem(LOCAL_PREFIX+key, JSON.stringify(val)); }catch(e){} }
+
+let dbApi = null;
+const listeners = { goals:[], dailyExtra:[], habits:[], completions:[], visionItems:[] };
+
+function makeCollectionStore(name){
+  return {
+    subscribe(cb){
+      listeners[name].push(cb);
+      if(dbApi){
+        return dbApi.collection(name).onSnapshot(snap=>{
+          const arr = snap.docs.map(d=>Object.assign({id:d.id}, d.data()));
+          cb(arr);
+        }, ()=>{ cb(localGetArr(name)); });
+      } else {
+        cb(localGetArr(name));
+        return ()=>{};
+      }
+    },
+    async add(data){
+      if(dbApi){ await dbApi.collection(name).add(data); }
+      else{ const arr=localGetArr(name); const item=Object.assign({id:uid()},data); arr.push(item); localSetArr(name,arr); listeners[name].forEach(cb=>cb(arr)); }
+    },
+    async set(id,data){
+      if(dbApi){ await dbApi.collection(name).doc(id).set(data); }
+      else{ const arr=localGetArr(name); const i=arr.findIndex(x=>x.id===id); const item=Object.assign({id},data); if(i>=0) arr[i]=item; else arr.push(item); localSetArr(name,arr); listeners[name].forEach(cb=>cb(arr)); }
+    },
+    async update(id,data){
+      if(dbApi){
+        try{ await dbApi.collection(name).doc(id).update(data); }
+        catch(e){ await dbApi.collection(name).doc(id).set(data); }
+      } else {
+        const arr=localGetArr(name); const i=arr.findIndex(x=>x.id===id);
+        if(i>=0) arr[i]=Object.assign({},arr[i],data); else arr.push(Object.assign({id},data));
+        localSetArr(name,arr); listeners[name].forEach(cb=>cb(arr));
+      }
+    },
+    async remove(id){
+      if(dbApi){ await dbApi.collection(name).doc(id).delete(); }
+      else{ const arr=localGetArr(name).filter(x=>x.id!==id); localSetArr(name,arr); listeners[name].forEach(cb=>cb(arr)); }
+    },
+    async getOnce(){
+      if(dbApi){ const snap = await dbApi.collection(name).get(); return snap.docs.map(d=>Object.assign({id:d.id},d.data())); }
+      return localGetArr(name);
+    }
+  };
+}
+
+function makeDocStore(path, fallback){
+  return {
+    subscribe(cb){
+      if(dbApi){
+        return dbApi.doc(path).onSnapshot(snap=>{ cb(snap.exists? snap.data(): fallback); }, ()=>cb(localGetDoc(path,fallback)));
+      } else { cb(localGetDoc(path,fallback)); return ()=>{}; }
+    },
+    async save(data){
+      if(dbApi){
+        const ref = dbApi.doc(path);
+        const cur = await ref.get();
+        if(cur.exists) await ref.update(data); else await ref.set(data);
+      } else { localSetDoc(path, Object.assign({}, localGetDoc(path,fallback), data)); }
+    }
+  };
+}
+
+const GoalsStore = makeCollectionStore('goals');
+const ExtraStore = makeCollectionStore('dailyExtra');
+const HabitsStore = makeCollectionStore('habits');
+const CompletionsStore = makeCollectionStore('completions');
+const PlanStore = makeDocStore('dayplan/blocks', {blocks:[]});
+const VisionStore = makeCollectionStore('visionItems');
+
+/* ================= state ================= */
+let goals = [], dailyExtra = [], habits = [], completions = {}, dayBlocks = [], visionItems = [];
+let viewMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+let viewYear = today.getFullYear();
+let openGoalId = null;
+let notifPermission = ('Notification' in window) ? Notification.permission : 'unsupported';
+const timers = {}; // taskId -> {remaining,total,running,intervalId}
+
+function phoenixGoal(){ return goals.find(g=>g.isPhoenix); }
+function taskCompletionDates(key){
+  return Object.keys(completions).filter(d=>completions[d]&&completions[d].items&&completions[d].items[key]).sort((a,b)=>b.localeCompare(a));
+}
+function isDone(itemKey, dateStr){ const c = completions[dateStr]; return !!(c && c.items && c.items[itemKey]); }
+
+async function toggleCompletion(itemKey, dateStr, value){
+  completions[dateStr] = completions[dateStr] || {date:dateStr, items:{}};
+  completions[dateStr].items[itemKey] = value;
+  renderAll();
+  if(dbApi){
+    const ref = dbApi.collection('completions').doc(dateStr);
+    try{
+      const cur = await ref.get();
+      if(cur.exists) await ref.update({items:{[itemKey]:value}});
+      else await ref.set({date:dateStr, items:{[itemKey]:value}});
+    }catch(e){}
+  } else {
+    const arr = localGetArr('completions');
+    const i = arr.findIndex(x=>x.id===dateStr || x.date===dateStr);
+    if(i>=0){ arr[i].items = Object.assign({}, arr[i].items, {[itemKey]:value}); }
+    else arr.push({id:dateStr, date:dateStr, items:{[itemKey]:value}});
+    localSetArr('completions', arr);
+  }
+}
+
+function historyHtml(key, isDailyTask){
+  const dates = taskCompletionDates(key);
+  if(!dates.length) return `<div class="history-row"><span class="history-label">لا سجل إنجاز بعد</span></div>`;
+  const shown = dates.slice(0,6).map(d=>`<span class="chip">${isDailyTask? esc(d) : 'أسبوع '+esc(d)}</span>`).join('');
+  const more = dates.length>6? `<span class="chip">+${dates.length-6}</span>`:'';
+  return `<div class="history-row"><span class="history-label">السجل:</span>${shown}${more}</div>`;
+}
+
+/* ================= seeding ================= */
+async function maybeSeed(){
+  const [gArr,hArr] = await Promise.all([GoalsStore.getOnce(), HabitsStore.getOnce()]);
+  let seededAnything = false;
+  if(!gArr.length && !hArr.length){
+    const mk = monthKey(today);
+    await GoalsStore.add({title:'الصحة واللياقة', color:PALETTE[0], isCore:true, month:mk, order:0, tasks:[
+      {id:uid(), name:'مشي 30 دقيقة', isDaily:true, time:'بعد العصر', durationMin:30},
+      {id:uid(), name:'شرب 2 لتر ماء', isDaily:true, time:'طوال اليوم', durationMin:0},
+      {id:uid(), name:'وزن نفسي', isDaily:false, time:'كل سبت', durationMin:5}
+    ]});
+    await GoalsStore.add({title:'تطوير المهارات', color:PALETTE[1], isCore:true, month:mk, order:1, tasks:[
+      {id:uid(), name:'قراءة 20 صفحة', isDaily:true, time:'قبل النوم', durationMin:20},
+      {id:uid(), name:'دورة أونلاين', isDaily:false, time:'3 مرات أسبوعياً', durationMin:45}
+    ]});
+    await ExtraStore.add({title:'ترتيب الغرفة', durationMin:10, order:0});
+    await ExtraStore.add({title:'متابعة الميزانية', durationMin:5, order:1});
+    await HabitsStore.add({title:'صلاة الفجر في وقتها', color:PALETTE[2], durationMin:5, note:'', order:0});
+    await HabitsStore.add({title:'بلا سكر مضاف', color:PALETTE[3], durationMin:0, note:'', order:1});
+    await HabitsStore.add({title:'تمارين إطالة', color:PALETTE[5], durationMin:10, note:'', order:2});
+    await PlanStore.save({blocks:[
+      {id:uid(), label:'نوم', color:PALETTE[1], hours:8},
+      {id:uid(), label:'عمل', color:PALETTE[2], hours:8},
+      {id:uid(), label:'وقت العائلة', color:PALETTE[3], hours:2}
+    ]});
+    seededAnything = true;
+  }
+  if(!gArr.some(g=>g.isPhoenix)){
+    await GoalsStore.add({title:'هدف العنقاء', isPhoenix:true, isCore:true, color:PHOENIX_COLOR, month:monthKey(today), order:999,
+      mission:'طاقة تتجدد كل يوم — كل تمرين خطوة نحو نسخة أقوى مني 🔥',
+      tasks:[
+        {id:uid(), name:'تمرين تنفّس عميق', description:'5 دورات تنفّس بطيئة لتصفية الذهن وبدء اليوم بهدوء', isDaily:true, durationMin:5},
+        {id:uid(), name:'جري خفيف', description:'جري بوتيرة هادئة لتنشيط الجسم', isDaily:false, durationMin:20}
+      ]});
+    seededAnything = true;
+  }
+  const vArr = await VisionStore.getOnce();
+  if(!vArr.length){
+    await VisionStore.add({type:'quote', text:'تتحقق الأحلام إن عشنا لها', x:12, y:14, rot:-4, z:1});
+    await VisionStore.add({type:'quote', text:'بسم الله توكلت على الله', x:46, y:30, rot:3, z:2});
+  }
+  if(seededAnything && !localStorage.getItem(LOCAL_PREFIX+'bannerDismissed')){
+    document.getElementById('seedBanner').hidden = false;
+  }
+}
+
+/* ================= tab navigation ================= */
+document.querySelectorAll('.nav-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const name = btn.dataset.tab;
+    document.querySelectorAll('.panel').forEach(p=>{ p.hidden = p.dataset.tab!==name; });
+  });
+});
+document.getElementById('dismissBanner').addEventListener('click', ()=>{
+  document.getElementById('seedBanner').hidden = true;
+  try{ localStorage.setItem(LOCAL_PREFIX+'bannerDismissed','1'); }catch(e){}
+});
+
+/* ================= GOALS TAB ================= */
+document.getElementById('prevMonth').addEventListener('click', ()=>{ viewMonth.setMonth(viewMonth.getMonth()-1); renderGoals(); });
+document.getElementById('nextMonth').addEventListener('click', ()=>{ viewMonth.setMonth(viewMonth.getMonth()+1); renderGoals(); });
+document.getElementById('addGoalBtn').addEventListener('click', ()=>{ showGoalForm(); });
+
+function showGoalForm(existing){
+  const host = document.getElementById('goalForm');
+  const isEdit = !!existing;
+  const g = existing || {title:'', color:PALETTE[0], isCore:false};
+  host.innerHTML = `
+    <div class="glass form-grid">
+      <div class="field"><label>اسم الهدف</label><input type="text" id="gf_title" value="${esc(g.title)}" placeholder="مثال: الصحة واللياقة"></div>
+      <div class="field"><label>اللون</label><div class="swatches" id="gf_colors">${PALETTE.map(c=>`<span class="swatch${c===g.color?' picked':''}" data-c="${c}" style="background:${c}"></span>`).join('')}</div></div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:13.5px;"><input type="checkbox" id="gf_core" ${g.isCore?'checked':''}> هدف أساسي (يظهر في متابعة الأداء)</label>
+      <div class="form-actions">
+        <button class="btn primary" id="gf_save">${isEdit?'حفظ':'إضافة الهدف'}</button>
+        <button class="btn" id="gf_cancel">إلغاء</button>
+      </div>
+    </div>`;
+  let picked = g.color;
+  host.querySelectorAll('.swatch').forEach(s=>s.addEventListener('click', ()=>{
+    host.querySelectorAll('.swatch').forEach(x=>x.classList.remove('picked'));
+    s.classList.add('picked'); picked = s.dataset.c;
+  }));
+  host.querySelector('#gf_cancel').addEventListener('click', ()=>host.innerHTML='');
+  host.querySelector('#gf_save').addEventListener('click', async ()=>{
+    const title = host.querySelector('#gf_title').value.trim();
+    if(!title) return;
+    const data = { title, color:picked, isCore: host.querySelector('#gf_core').checked };
+    if(isEdit) await GoalsStore.update(g.id, data);
+    else await GoalsStore.add(Object.assign({month:monthKey(viewMonth), order:goals.length, tasks:[]}, data));
+    host.innerHTML='';
+  });
+}
+
+function showTaskForm(goal){
+  const host = document.getElementById('taskForm_'+goal.id);
+  host.innerHTML = `
+    <div class="form-grid" style="padding:10px 0;border-top:0">
+      <div class="field"><label>اسم المهمة</label><input type="text" id="tf_name" placeholder="مثال: مشي 30 دقيقة"></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;"><input type="checkbox" id="tf_daily" checked> يومية (وإلا أسبوعية)</label>
+        <div class="field" style="flex:1;min-width:140px;"><label>التوقيت (نص حر)</label><input type="text" id="tf_time" placeholder="مثال: 7:00 ص / بعد العصر"></div>
+        <div class="field" style="width:110px;"><label>المدة (دقيقة)</label><input type="number" id="tf_dur" min="0" step="1" placeholder="0"></div>
+      </div>
+      <div class="form-actions">
+        <button class="btn primary" id="tf_save">إضافة المهمة</button>
+        <button class="btn" id="tf_cancel">إلغاء</button>
+      </div>
+    </div>`;
+  host.querySelector('#tf_cancel').addEventListener('click', ()=>host.innerHTML='');
+  host.querySelector('#tf_save').addEventListener('click', async ()=>{
+    const name = host.querySelector('#tf_name').value.trim();
+    if(!name) return;
+    const task = { id:uid(), name, isDaily: host.querySelector('#tf_daily').checked,
+      time: host.querySelector('#tf_time').value.trim(), durationMin: Number(host.querySelector('#tf_dur').value)||0 };
+    const tasks = (goal.tasks||[]).concat([task]);
+    await GoalsStore.update(goal.id, {tasks});
+    host.innerHTML='';
+  });
+}
+
+function renderGoals(){
+  document.getElementById('monthLabel').textContent = AR_MONTHS[viewMonth.getMonth()]+' '+viewMonth.getFullYear();
+  const mk = monthKey(viewMonth);
+  const list = goals.filter(g=>g.month===mk && !g.isPhoenix).sort((a,b)=>(a.order||0)-(b.order||0));
+  const host = document.getElementById('goalList');
+  if(!list.length){ host.innerHTML = '<div class="glass empty">لا أهداف لهذا الشهر بعد — أضف هدفك الأول.</div>'; return; }
+  host.innerHTML = list.map(g=>{
+    const tasks = g.tasks||[];
+    return `
+    <div class="glass goal-card${g.id===openGoalId?' open':''}" data-id="${g.id}">
+      <div class="goal-head" data-act="toggle">
+        <span class="dot" style="background:${g.color}"></span>
+        <span class="title">${esc(g.title)}</span>
+        ${g.isCore? '<span class="core-badge">أساسي</span>':''}
+        <button class="iconbtn" data-act="edit" title="تعديل"><svg><use href="#ic-pencil"/></svg></button>
+        <button class="iconbtn danger" data-act="del" title="حذف"><svg><use href="#ic-trash"/></svg></button>
+        <span class="chev"><svg><use href="#ic-chev"/></svg></span>
+      </div>
+      <div class="goal-body">
+        ${tasks.map(t=>{
+          const key = 'g:'+g.id+':'+t.id;
+          const bd = bucketDateFor(t);
+          const done = isDone(key, bd);
+          return `
+          <div class="task-row">
+            <div class="line1">
+              <button class="chk${done?' done':''}" data-key="${key}" data-date="${bd}"><svg><use href="#ic-check"/></svg></button>
+              <span class="name${done?' done':''}">${esc(t.name)}</span>
+              ${t.isDaily?'<span class="chip on">يومي</span>':'<span class="chip">أسبوعي</span>'}
+              ${t.time?`<span class="chip">${esc(t.time)}</span>`:''}
+              ${t.durationMin?`<span class="chip">${fmtMin(t.durationMin)}</span>`:''}
+              <span class="task-actions"><button class="iconbtn danger" data-act="deltask" data-t="${t.id}"><svg><use href="#ic-trash"/></svg></button></span>
+            </div>
+            ${historyHtml(key, t.isDaily)}
+          </div>`;
+        }).join('') || '<div class="faint" style="font-size:12.5px;padding:8px 0">لا مهام بعد.</div>'}
+        <button class="addline" data-act="addtask"><svg><use href="#ic-plus"/></svg>إضافة مهمة</button>
+        <div id="taskForm_${g.id}"></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  host.querySelectorAll('.goal-card').forEach(card=>{
+    const id = card.dataset.id;
+    const g = list.find(x=>x.id===id);
+    card.querySelector('[data-act="toggle"]').addEventListener('click', (e)=>{
+      if(e.target.closest('.iconbtn')) return;
+      openGoalId = (openGoalId===id)? null : id; renderGoals();
+    });
+    card.querySelector('[data-act="edit"]').addEventListener('click', ()=>showGoalForm(g));
+    card.querySelector('[data-act="del"]').addEventListener('click', ()=>{ if(confirm('حذف هذا الهدف ومهامه؟')) GoalsStore.remove(id); });
+    const addBtn = card.querySelector('[data-act="addtask"]');
+    if(addBtn) addBtn.addEventListener('click', ()=>showTaskForm(g));
+    card.querySelectorAll('[data-act="deltask"]').forEach(b=>{
+      b.addEventListener('click', ()=>{
+        const tasks = (g.tasks||[]).filter(t=>t.id!==b.dataset.t);
+        GoalsStore.update(id, {tasks});
+      });
+    });
+    card.querySelectorAll('.chk').forEach(b=>{
+      b.addEventListener('click', ()=>{
+        toggleCompletion(b.dataset.key, b.dataset.date, !b.classList.contains('done'));
+      });
+    });
+  });
+}
+
+/* ================= DAILY TAB ================= */
+document.getElementById('extraAddBtn').addEventListener('click', addExtra);
+document.getElementById('extraInput').addEventListener('keydown', e=>{ if(e.key==='Enter') addExtra(); });
+function addExtra(){
+  const input = document.getElementById('extraInput');
+  const title = input.value.trim();
+  if(!title) return;
+  ExtraStore.add({title, durationMin:0, order:dailyExtra.length});
+  input.value='';
+}
+
+function checkRow(key, name, timeText, done, dateStr){
+  return `<div class="check-row" data-key="${esc(key)}">
+    <button class="chk${done?' done':''}" data-key="${esc(key)}" data-date="${dateStr}"><svg><use href="#ic-check"/></svg></button>
+    <span class="name${done?' done':''}">${esc(name)}</span>
+    ${timeText? `<span class="time">${esc(timeText)}</span>`:''}
+  </div>`;
+}
+
+function computeDailyProgress(){
+  const todayStr = dateKey(today);
+  const mk = monthKey(today);
+  let total=0, done=0;
+  goals.filter(g=>g.month===mk && !g.isPhoenix).forEach(g=>{
+    (g.tasks||[]).filter(t=>t.isDaily).forEach(t=>{ total++; if(isDone('g:'+g.id+':'+t.id, todayStr)) done++; });
+  });
+  const pg = phoenixGoal();
+  if(pg) (pg.tasks||[]).filter(t=>t.isDaily).forEach(t=>{ total++; if(isDone('g:'+pg.id+':'+t.id, todayStr)) done++; });
+  dailyExtra.forEach(e=>{ total++; if(isDone('d:'+e.id, todayStr)) done++; });
+  habits.forEach(h=>{ total++; if(isDone('h:'+h.id, todayStr)) done++; });
+  return { total, done, pct: total? Math.round(done/total*100) : 0 };
+}
+
+function renderDaily(){
+  const todayStr = dateKey(today);
+  const mk = monthKey(today);
+
+  const goalRows = [];
+  goals.filter(g=>g.month===mk && !g.isPhoenix).forEach(g=>{
+    (g.tasks||[]).filter(t=>t.isDaily).forEach(t=>{
+      const key = 'g:'+g.id+':'+t.id;
+      goalRows.push({key, name:g.title+' — '+t.name, time:t.time, done:isDone(key, todayStr)});
+    });
+  });
+  document.getElementById('dailyFromGoals').innerHTML = goalRows.length? goalRows.map(r=>checkRow(r.key,r.name,r.time,r.done, todayStr)).join('') : '<div class="empty">لا مهام يومية ضمن أهداف هذا الشهر.</div>';
+
+  const pg = phoenixGoal();
+  const phxRows = pg? (pg.tasks||[]).filter(t=>t.isDaily).map(t=>{
+    const key='g:'+pg.id+':'+t.id; return {key, name:t.name, time:t.durationMin?fmtMin(t.durationMin):'', done:isDone(key,todayStr)};
+  }) : [];
+  document.getElementById('dailyPhoenix').innerHTML = phxRows.length? phxRows.map(r=>checkRow(r.key,r.name,r.time,r.done, todayStr)).join('') : '<div class="empty">أضف تمارين يومية من تبويب العنقاء.</div>';
+
+  const extraHost = document.getElementById('dailyExtraList');
+  extraHost.innerHTML = dailyExtra.length? dailyExtra.map(e=>{
+    const key='d:'+e.id; const done=isDone(key,todayStr);
+    return `<div class="check-row" data-key="${key}">
+      <button class="chk${done?' done':''}" data-key="${key}" data-date="${todayStr}"><svg><use href="#ic-check"/></svg></button>
+      <span class="name${done?' done':''}">${esc(e.title)}</span>
+      <button class="iconbtn danger" data-del="${e.id}"><svg><use href="#ic-trash"/></svg></button>
+    </div>`;
+  }).join('') : '<div class="empty">أضف أهدافاً يومية إضافية أدناه.</div>';
+  extraHost.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click', ()=>ExtraStore.remove(b.dataset.del)));
+
+  const habitHost = document.getElementById('dailyHabits');
+  habitHost.innerHTML = habits.length? habits.map(h=>{
+    const key='h:'+h.id; const done=isDone(key,todayStr);
+    return `<div class="check-row" data-key="${key}">
+      <span class="dot" style="background:${h.color}"></span>
+      <button class="chk${done?' done':''}" data-key="${key}" data-date="${todayStr}"><svg><use href="#ic-check"/></svg></button>
+      <span class="name${done?' done':''}">${esc(h.title)}</span>
+    </div>`;
+  }).join('') : '<div class="empty">لا عادات مضافة بعد — أضفها من تبويب متابعة الأداء.</div>';
+
+  document.querySelectorAll('#dailyFromGoals .chk, #dailyPhoenix .chk, #dailyExtraList .chk, #dailyHabits .chk').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      toggleCompletion(btn.dataset.key, btn.dataset.date, !btn.classList.contains('done'));
+    });
+  });
+
+  const prog = computeDailyProgress();
+  document.getElementById('progressN').textContent = prog.pct+'%';
+  document.getElementById('heroPct').textContent = prog.pct+'%';
+  const C = 2*Math.PI*24, C2 = 2*Math.PI*21;
+  const ring = document.getElementById('ringFg');
+  ring.style.strokeDasharray = C; ring.style.strokeDashoffset = C*(1-prog.pct/100);
+  const hr = document.getElementById('heroRing');
+  hr.style.strokeDasharray = C2; hr.style.strokeDashoffset = C2*(1-prog.pct/100);
+}
+
+/* ================= PHOENIX TAB ================= */
+document.getElementById('addExerciseBtn').addEventListener('click', ()=>showExerciseForm());
+document.getElementById('phoenixMission').addEventListener('change', (e)=>{
+  const pg = phoenixGoal(); if(pg) GoalsStore.update(pg.id, {mission: e.target.value.trim()});
+});
+
+function requestNotifPermission(){
+  if(!('Notification' in window)){ notifPermission='unsupported'; renderPhoenix(); return; }
+  Notification.requestPermission().then(p=>{ notifPermission=p; renderPhoenix(); });
+}
+
+function renderNotifBox(){
+  const box = document.getElementById('notifBox');
+  if(notifPermission==='granted'){
+    box.innerHTML = `<span class="notif-chip"><svg><use href="#ic-bell"/></svg>تنبيهات المتصفح مفعّلة</span>`;
+  } else if(notifPermission==='denied'){
+    box.innerHTML = `<span class="notif-chip"><svg><use href="#ic-bell"/></svg>تم رفض التنبيهات من إعدادات المتصفح</span>`;
+  } else if(notifPermission==='unsupported'){
+    box.innerHTML = '';
+  } else {
+    box.innerHTML = `<button class="btn" id="notifReqBtn" style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.22);color:var(--dark-ink)"><svg><use href="#ic-bell"/></svg>تفعيل تنبيهات المتصفح</button>`;
+    const b = box.querySelector('#notifReqBtn');
+    if(b) b.addEventListener('click', requestNotifPermission);
+  }
+}
+
+function showExerciseForm(existing){
+  const pg = phoenixGoal(); if(!pg) return;
+  const host = document.getElementById('exerciseForm');
+  const isEdit = !!existing;
+  const t = existing || {name:'', description:'', isDaily:true, durationMin:10};
+  host.innerHTML = `
+    <div class="glass form-grid">
+      <div class="field"><label>اسم التمرين</label><input type="text" id="ef_name" value="${esc(t.name)}" placeholder="مثال: تمارين إطالة"></div>
+      <div class="field"><label>وصف التمرين</label><textarea id="ef_desc" placeholder="وصف قصير للتمرين وكيفية أدائه">${esc(t.description||'')}</textarea></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <div class="field" style="flex:1;min-width:140px;">
+          <label>التكرار</label>
+          <select id="ef_freq"><option value="daily" ${t.isDaily?'selected':''}>يومي</option><option value="weekly" ${!t.isDaily?'selected':''}>أسبوعي</option></select>
+        </div>
+        <div class="field" style="width:120px;"><label>المدة (دقيقة)</label><input type="number" id="ef_dur" min="0" step="1" value="${t.durationMin||0}"></div>
+      </div>
+      <div class="form-actions">
+        <button class="btn flame" id="ef_save">${isEdit?'حفظ':'إضافة التمرين'}</button>
+        <button class="btn" id="ef_cancel">إلغاء</button>
+        ${isEdit? '<button class="btn" id="ef_del" style="color:var(--danger);margin-inline-start:auto">حذف</button>':''}
+      </div>
+    </div>`;
+  host.querySelector('#ef_cancel').addEventListener('click', ()=>host.innerHTML='');
+  if(isEdit) host.querySelector('#ef_del').addEventListener('click', ()=>{
+    if(confirm('حذف هذا التمرين؟')){
+      const tasks = (pg.tasks||[]).filter(x=>x.id!==t.id);
+      GoalsStore.update(pg.id, {tasks});
+      host.innerHTML='';
+    }
+  });
+  host.querySelector('#ef_save').addEventListener('click', async ()=>{
+    const name = host.querySelector('#ef_name').value.trim();
+    if(!name) return;
+    const data = {
+      name, description: host.querySelector('#ef_desc').value.trim(),
+      isDaily: host.querySelector('#ef_freq').value==='daily',
+      durationMin: Number(host.querySelector('#ef_dur').value)||0
+    };
+    let tasks;
+    if(isEdit) tasks = (pg.tasks||[]).map(x=>x.id===t.id? Object.assign({},x,data) : x);
+    else tasks = (pg.tasks||[]).concat([Object.assign({id:uid()},data)]);
+    await GoalsStore.update(pg.id, {tasks});
+    host.innerHTML='';
+  });
+}
+
+function ensureTimer(t){
+  if(!timers[t.id]) timers[t.id] = { remaining:(t.durationMin||0)*60, total:(t.durationMin||0)*60, running:false, intervalId:null };
+  return timers[t.id];
+}
+function tick(t){
+  const tm = timers[t.id]; if(!tm) return;
+  tm.remaining--;
+  const disp = document.getElementById('tmr_'+t.id);
+  if(disp) disp.textContent = fmtClock(tm.remaining);
+  const bar = document.getElementById('bar_'+t.id);
+  if(bar) bar.style.width = (tm.total? (100*(1-tm.remaining/tm.total)) : 100)+'%';
+  if(tm.remaining<=0){
+    clearInterval(tm.intervalId); tm.running=false; tm.remaining=0;
+    onTimerDone(t);
+  }
+}
+function onTimerDone(t){
+  beep();
+  showToast('انتهى وقت "'+t.name+'"! 🔥 أحسنت');
+  if(notifPermission==='granted'){
+    try{ new Notification('انتهى وقت التمرين 🔥', {body:t.name+' — أحسنت!'}); }catch(e){}
+  }
+  const pg = phoenixGoal();
+  if(pg) toggleCompletion('g:'+pg.id+':'+t.id, bucketDateFor(t), true);
+  else renderAll();
+}
+function startTimer(t){
+  const tm = ensureTimer(t);
+  if(tm.running) return;
+  if(tm.remaining<=0) tm.remaining = tm.total;
+  tm.running = true;
+  tm.intervalId = setInterval(()=>tick(t), 1000);
+  renderPhoenix();
+}
+function pauseTimer(t){
+  const tm = timers[t.id]; if(!tm) return;
+  clearInterval(tm.intervalId); tm.running=false;
+  renderPhoenix();
+}
+function resetTimer(t){
+  const tm = ensureTimer(t);
+  clearInterval(tm.intervalId); tm.running=false; tm.remaining=tm.total;
+  renderPhoenix();
+}
+
+function renderPhoenix(){
+  const pg = phoenixGoal();
+  document.getElementById('phoenixMission').value = pg? (pg.mission||'') : '';
+  renderNotifBox();
+  const host = document.getElementById('exerciseList');
+  if(!pg){ host.innerHTML=''; return; }
+  const tasks = pg.tasks||[];
+  if(!tasks.length){ host.innerHTML = '<div class="glass empty">أضف أول تمرين لهدف العنقاء.</div>'; return; }
+
+  host.innerHTML = tasks.map(t=>{
+    const key = 'g:'+pg.id+':'+t.id;
+    const bd = bucketDateFor(t);
+    const done = isDone(key, bd);
+    const tm = ensureTimer(t);
+    return `
+    <div class="glass exercise-card" data-id="${t.id}">
+      <div class="exercise-head">
+        <button class="chk${done?' done':''}" data-key="${key}" data-date="${bd}"><svg><use href="#ic-check"/></svg></button>
+        <div style="flex:1">
+          <div class="name">${esc(t.name)}</div>
+          ${t.description? `<div class="desc">${esc(t.description)}</div>`:''}
+          <div class="exercise-meta">
+            ${t.isDaily? '<span class="chip flame">يومي</span>' : '<span class="chip flame">أسبوعي</span>'}
+            ${t.durationMin? `<span class="chip">${fmtMin(t.durationMin)}</span>`:''}
+          </div>
+        </div>
+        <button class="iconbtn" data-act="edit"><svg><use href="#ic-pencil"/></svg></button>
+      </div>
+      ${t.durationMin? `
+      <div class="timer-box">
+        <div class="timer-clock" id="tmr_${t.id}">${fmtClock(tm.remaining)}</div>
+        <div class="timer-bar-wrap"><div class="timer-bar" id="bar_${t.id}" style="width:${tm.total?(100*(1-tm.remaining/tm.total)):0}%"></div></div>
+        <div class="timer-controls">
+          <button class="iconbtn filled" data-act="${tm.running?'pause':'play'}" title="${tm.running?'إيقاف مؤقت':'ابدأ'}"><svg><use href="#ic-${tm.running?'pause':'play'}"/></svg></button>
+          <button class="iconbtn" data-act="reset" title="إعادة"><svg><use href="#ic-reset"/></svg></button>
+        </div>
+      </div>` : ''}
+      ${historyHtml(key, t.isDaily)}
+    </div>`;
+  }).join('');
+
+  host.querySelectorAll('.exercise-card').forEach(card=>{
+    const id = card.dataset.id;
+    const t = tasks.find(x=>x.id===id);
+    const chk = card.querySelector('.chk');
+    if(chk) chk.addEventListener('click', ()=>toggleCompletion(chk.dataset.key, chk.dataset.date, !chk.classList.contains('done')));
+    const editBtn = card.querySelector('[data-act="edit"]');
+    if(editBtn) editBtn.addEventListener('click', ()=>showExerciseForm(t));
+    const playBtn = card.querySelector('[data-act="play"]');
+    if(playBtn) playBtn.addEventListener('click', ()=>startTimer(t));
+    const pauseBtn = card.querySelector('[data-act="pause"]');
+    if(pauseBtn) pauseBtn.addEventListener('click', ()=>pauseTimer(t));
+    const resetBtn = card.querySelector('[data-act="reset"]');
+    if(resetBtn) resetBtn.addEventListener('click', ()=>resetTimer(t));
+  });
+}
+
+/* ================= PERFORMANCE TAB ================= */
+document.getElementById('prevYear').addEventListener('click', ()=>{ viewYear--; renderTracker(); });
+document.getElementById('nextYear').addEventListener('click', ()=>{ viewYear++; renderTracker(); });
+document.getElementById('addHabitBtn').addEventListener('click', ()=>showHabitForm());
+
+function showHabitForm(existing){
+  const host = document.getElementById('habitForm');
+  const isEdit = !!existing;
+  const h = existing || {title:'', color:PALETTE[2], durationMin:0, note:''};
+  host.innerHTML = `
+    <div class="glass form-grid">
+      <div class="field"><label>اسم العادة</label><input type="text" id="hf_title" value="${esc(h.title)}" placeholder="مثال: صلاة الفجر في وقتها"></div>
+      <div class="field"><label>اللون</label><div class="swatches" id="hf_colors">${PALETTE.map(c=>`<span class="swatch${c===h.color?' picked':''}" data-c="${c}" style="background:${c}"></span>`).join('')}</div></div>
+      <div style="display:flex;gap:10px;">
+        <div class="field" style="width:140px;"><label>المدة (دقيقة/يوم)</label><input type="number" id="hf_dur" min="0" value="${h.durationMin||0}"></div>
+        <div class="field" style="flex:1;"><label>ملاحظة قصيرة (اختياري)</label><input type="text" id="hf_note" value="${esc(h.note||'')}" placeholder="مثال: 20 صفحة"></div>
+      </div>
+      <div class="form-actions">
+        <button class="btn primary" id="hf_save">${isEdit?'حفظ':'إضافة العادة'}</button>
+        <button class="btn" id="hf_cancel">إلغاء</button>
+        ${isEdit? '<button class="btn" id="hf_del" style="color:var(--danger);margin-inline-start:auto">حذف</button>':''}
+      </div>
+    </div>`;
+  let picked = h.color;
+  host.querySelectorAll('.swatch').forEach(s=>s.addEventListener('click', ()=>{
+    host.querySelectorAll('.swatch').forEach(x=>x.classList.remove('picked'));
+    s.classList.add('picked'); picked = s.dataset.c;
+  }));
+  host.querySelector('#hf_cancel').addEventListener('click', ()=>host.innerHTML='');
+  if(isEdit) host.querySelector('#hf_del').addEventListener('click', ()=>{ if(confirm('حذف هذه العادة؟')){ HabitsStore.remove(h.id); host.innerHTML=''; } });
+  host.querySelector('#hf_save').addEventListener('click', async ()=>{
+    const title = host.querySelector('#hf_title').value.trim();
+    if(!title) return;
+    const data = { title, color:picked, durationMin:Number(host.querySelector('#hf_dur').value)||0, note: host.querySelector('#hf_note').value.trim() };
+    if(isEdit) await HabitsStore.update(h.id, data);
+    else await HabitsStore.add(Object.assign({order:habits.length}, data));
+    host.innerHTML='';
+  });
+}
+
+function buildStrip(color, startDate, endDate, statusFn){
+  const first = new Date(startDate);
+  const padStart = (first.getDay()+1)%7;
+  const gridStart = new Date(first); gridStart.setDate(gridStart.getDate()-padStart);
+  const last = new Date(endDate);
+  const padEnd = 6-((last.getDay()+1)%7);
+  const gridEnd = new Date(last); gridEnd.setDate(gridEnd.getDate()+padEnd);
+
+  const cells = [];
+  const ticks = [];
+  let cursor = new Date(gridStart);
+  let col = 0;
+  let lastMonthSeen = -1;
+  while(cursor <= gridEnd){
+    const inRange = cursor>=startDate && cursor<=endDate;
+    const isFuture = cursor > today;
+    let bg = 'transparent', title='';
+    if(inRange){
+      if(isFuture){ bg = 'rgba(43,35,32,.05)'; title = dateKey(cursor); }
+      else {
+        const st = statusFn(cursor);
+        bg = st>0 ? withAlpha(color, 0.35+0.65*st) : 'rgba(43,35,32,.08)';
+        title = dateKey(cursor) + (st>0? (st===1?' — مكتمل':' — جزئي') : ' — لم يُنجز');
+      }
+    }
+    cells.push(`<div class="cell" style="background:${bg}" title="${title}"></div>`);
+    if(cursor.getDate()<=7 && cursor.getMonth()!==lastMonthSeen && inRange){ lastMonthSeen = cursor.getMonth(); ticks[col] = AR_MONTHS[cursor.getMonth()].slice(0,3); }
+    cursor.setDate(cursor.getDate()+1);
+    if(((padStart + (cells.length-1))%7)===6) col++;
+  }
+  let tickHtml = '';
+  const totalCols = Math.ceil(cells.length/7);
+  for(let c=0;c<totalCols;c++) tickHtml += `<div>${esc(ticks[c]||'')}</div>`;
+  return `<div class="month-ticks" style="grid-auto-columns:9px">${tickHtml}</div><div class="grid-wrap"><div class="year-grid">${cells.join('')}</div></div>`;
+}
+
+function renderTracker(){
+  document.getElementById('yearLabel').textContent = String(viewYear);
+  const yearStart = new Date(viewYear,0,1);
+  const yearEnd = new Date(viewYear,11,31);
+  const host = document.getElementById('trackerList');
+  const coreGoals = goals.filter(g=>g.isCore && (g.tasks||[]).some(t=>t.isDaily));
+  const items = [];
+
+  coreGoals.forEach(g=>{
+    const dailyTasks = (g.tasks||[]).filter(t=>t.isDaily);
+    const weeklyTasks = (g.tasks||[]).filter(t=>!t.isDaily);
+    const durSum = dailyTasks.reduce((s,t)=>s+(t.durationMin||0),0);
+    let start, end, note;
+    if(g.isPhoenix){
+      start = yearStart; end = yearEnd; note = 'هدف العنقاء 🔥';
+    } else {
+      const [y,m] = g.month.split('-').map(Number);
+      start = new Date(y, m-1, 1); end = new Date(y, m, 0);
+      note = AR_MONTHS[m-1]+' '+y+' • هدف أساسي';
+    }
+    let weeklyNote = '';
+    if(weeklyTasks.length){
+      const wk = dateKey(weekStartDate(today));
+      const doneWeekly = weeklyTasks.filter(t=>isDone('g:'+g.id+':'+t.id, wk)).length;
+      weeklyNote = ' · أسبوعي: '+doneWeekly+'/'+weeklyTasks.length;
+    }
+    items.push({
+      name:g.title, color:g.color,
+      durationLabel: durSum? fmtMin(durSum)+' يومياً' : '',
+      note: note+weeklyNote,
+      start, end,
+      status(d){
+        const ds = dateKey(d);
+        const c = completions[ds];
+        if(!c || !c.items) return 0;
+        const doneCount = dailyTasks.filter(t=>c.items['g:'+g.id+':'+t.id]).length;
+        if(doneCount===0) return 0;
+        return doneCount===dailyTasks.length? 1 : 0.5;
+      }
+    });
+  });
+
+  habits.forEach(h=>{
+    items.push({
+      name:h.title, color:h.color,
+      durationLabel: h.durationMin? fmtMin(h.durationMin)+' يومياً' : '',
+      note: h.note || 'عادة',
+      start: yearStart, end: yearEnd,
+      status(d){ return isDone('h:'+h.id, dateKey(d)) ? 1 : 0; }
+    });
+  });
+
+  if(!items.length){ host.innerHTML = '<div class="glass empty">لا أهداف أساسية أو عادات لعرضها بعد.</div>'; return; }
+
+  host.innerHTML = items.map(it=>{
+    const effEnd = it.end>today? today: it.end;
+    let doneDays=0, totalDays=0;
+    if(it.start<=today){
+      const c = new Date(Math.max(it.start,yearStart));
+      const endWalk = new Date(Math.min(effEnd,yearEnd));
+      while(c<=endWalk){ totalDays++; doneDays += it.status(c); c.setDate(c.getDate()+1); }
+    }
+    const strip = buildStrip(it.color, it.start<yearStart?yearStart:it.start, it.end>yearEnd?yearEnd:it.end, it.status);
+    return `<div class="glass tracker-card">
+      <div class="tracker-head">
+        <span class="dot" style="background:${it.color};width:15px;height:15px"></span>
+        <span class="name">${esc(it.name)}</span>
+        <span class="stat">${totalDays? Math.round(doneDays)+' / '+totalDays+' يوم':''}</span>
+      </div>
+      ${strip}
+      <div class="legend-line">
+        <span class="dot" style="background:${it.color}"></span>
+        <span class="txt"><b>${esc(it.name)}</b>${it.durationLabel? ' — '+esc(it.durationLabel):''}${it.note? ' · '+esc(it.note):''}</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  host.querySelectorAll('.tracker-card').forEach((card,idx)=>{
+    const it = items[idx];
+    const h = habits.find(x=>x.title===it.name && x.color===it.color);
+    if(h){
+      const nameEl = card.querySelector('.tracker-head .name');
+      nameEl.style.cursor='pointer'; nameEl.title='اضغط للتعديل';
+      nameEl.addEventListener('click', ()=>showHabitForm(h));
+    }
+  });
+}
+
+/* ================= HOURS TAB ================= */
+document.getElementById('blockAddBtn').addEventListener('click', addBlock);
+function addBlock(){
+  const label = document.getElementById('blockLabelInput').value.trim();
+  const hrs = Number(document.getElementById('blockHoursInput').value);
+  if(!label || !hrs) return;
+  const blocks = dayBlocks.concat([{id:uid(), label, color:PALETTE[dayBlocks.length%PALETTE.length], hours:hrs}]);
+  PlanStore.save({blocks});
+  document.getElementById('blockLabelInput').value='';
+  document.getElementById('blockHoursInput').value='';
+}
+
+function renderHours(){
+  const mk = monthKey(today);
+  const needItems = [];
+  goals.forEach(g=>{
+    if(g.isPhoenix){
+      (g.tasks||[]).filter(t=>t.isDaily && t.durationMin).forEach(t=>needItems.push({name:'🔥 '+t.name, min:t.durationMin}));
+    } else if(g.month===mk){
+      (g.tasks||[]).filter(t=>t.isDaily && t.durationMin).forEach(t=>needItems.push({name:g.title+' — '+t.name, min:t.durationMin}));
+    }
+  });
+  dailyExtra.filter(e=>e.durationMin).forEach(e=>needItems.push({name:e.title, min:e.durationMin}));
+  habits.filter(h=>h.durationMin).forEach(h=>needItems.push({name:h.title, min:h.durationMin}));
+  const autoMin = needItems.reduce((s,i)=>s+i.min,0);
+  const autoHrs = autoMin/60;
+
+  const manualTotal = dayBlocks.reduce((s,b)=>s+(Number(b.hours)||0),0);
+  const total = manualTotal + autoHrs;
+  const free = 24-total;
+
+  const bar = document.getElementById('dayBar');
+  let segs = dayBlocks.map(b=>`<div class="seg" style="width:${(b.hours/24*100)}%;background:${b.color}" title="${esc(b.label)} — ${b.hours} س"></div>`).join('');
+  if(autoHrs>0) segs += `<div class="seg" style="width:${(autoHrs/24*100)}%;background:var(--ink)" title="مهام وعادات يومية — ${fmtMin(autoMin)}"></div>`;
+  if(free>0) segs += `<div class="seg" style="width:${(free/24*100)}%;background:rgba(255,255,255,.5)" title="وقت حر — ${free.toFixed(1)} س"></div>`;
+  bar.innerHTML = segs || '<div class="seg" style="width:100%;background:rgba(255,255,255,.5)"></div>';
+
+  const host = document.getElementById('blockList');
+  host.innerHTML = dayBlocks.map(b=>`
+    <div class="block-row">
+      <span class="dot" style="background:${b.color}"></span>
+      <input type="text" data-id="${b.id}" data-f="label" value="${esc(b.label)}">
+      <input type="number" min="0" step="0.25" data-id="${b.id}" data-f="hours" value="${b.hours}">
+      <span class="muted" style="font-size:12px">س</span>
+      <button class="iconbtn danger" data-del="${b.id}"><svg><use href="#ic-trash"/></svg></button>
+    </div>`).join('') + `
+    <div class="block-row" style="border-top:1px solid var(--line)">
+      <span class="dot" style="background:var(--ink)"></span>
+      <span class="muted" style="flex:1;font-size:13px">مهام وعادات يومية (تلقائي)</span>
+      <span class="muted" style="font-size:12px">${fmtMin(autoMin)}</span>
+    </div>`;
+  host.querySelectorAll('input').forEach(inp=>{
+    inp.addEventListener('change', ()=>{
+      const id = inp.dataset.id, f = inp.dataset.f;
+      const blocks = dayBlocks.map(b=> b.id===id? Object.assign({},b,{[f]: f==='hours'? Number(inp.value)||0 : inp.value}) : b);
+      PlanStore.save({blocks});
+    });
+  });
+  host.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click', ()=>{
+    const blocks = dayBlocks.filter(x=>x.id!==b.dataset.del);
+    PlanStore.save({blocks});
+  }));
+
+  const totalHost = document.getElementById('totalRow');
+  const over = free < -0.0001;
+  totalHost.innerHTML = `<span>الإجمالي المستخدم</span><b style="${over?'color:var(--danger)':''}">${total.toFixed(1)} / 24 س${over? ' — تجاوزت اليوم!':''}</b>`;
+
+  const needsHost = document.getElementById('needsTable');
+  needsHost.innerHTML = needItems.sort((a,b)=>b.min-a.min).map(i=>`<tr><td>${esc(i.name)}</td><td>${fmtMin(i.min)}</td></tr>`).join('')
+    || '<tr><td colspan="2" class="empty" style="border:0">لا احتياجات زمنية محددة بعد.</td></tr>';
+}
+
+/* ================= VISION BOARD TAB ================= */
+document.getElementById('vbAddImageBtn').addEventListener('click', ()=>document.getElementById('vbImageInput').click());
+document.getElementById('vbAddQuoteBtn').addEventListener('click', ()=>showQuoteForm());
+
+document.getElementById('vbImageInput').addEventListener('change', (e)=>{
+  const file = e.target.files && e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    const img = new Image();
+    img.onload = async ()=>{
+      const MAX = 480;
+      let w = img.width, h = img.height;
+      if(w>h && w>MAX){ h = Math.round(h*MAX/w); w = MAX; }
+      else if(h>=w && h>MAX){ w = Math.round(w*MAX/h); h = MAX; }
+      const canvas = document.createElement('canvas');
+      canvas.width=w; canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.72);
+      const maxZ = visionItems.reduce((m,it)=>Math.max(m,it.z||0),0);
+      await VisionStore.add({type:'image', img:dataUrl, x:30+Math.random()*20, y:20+Math.random()*20, rot:Math.round(Math.random()*10-5), z:maxZ+1});
+    };
+    img.onerror = ()=>showToast('تعذّر تحميل هذه الصورة');
+    img.src = reader.result;
+  };
+  reader.readAsDataURL(file);
+  e.target.value='';
+});
+
+function showQuoteForm(existing){
+  const host = document.getElementById('quoteForm');
+  const isEdit = !!existing;
+  host.innerHTML = `
+    <div class="glass form-grid">
+      <div class="field"><label>العبارة</label><textarea id="qf_text" placeholder="اكتب عبارة تلهمك…">${esc(existing? existing.text : '')}</textarea></div>
+      <div class="form-actions">
+        <button class="btn primary" id="qf_save">${isEdit?'حفظ':'إضافة العبارة'}</button>
+        <button class="btn" id="qf_cancel">إلغاء</button>
+      </div>
+    </div>`;
+  host.querySelector('#qf_cancel').addEventListener('click', ()=>host.innerHTML='');
+  host.querySelector('#qf_save').addEventListener('click', async ()=>{
+    const text = host.querySelector('#qf_text').value.trim();
+    if(!text) return;
+    if(isEdit){ await VisionStore.update(existing.id, {text}); }
+    else {
+      const maxZ = visionItems.reduce((m,it)=>Math.max(m,it.z||0),0);
+      await VisionStore.add({type:'quote', text, x:20+Math.random()*30, y:20+Math.random()*30, rot:Math.round(Math.random()*8-4), z:maxZ+1});
+    }
+    host.innerHTML='';
+  });
+}
+
+const VB_DEFAULT_SIZE = { image:{w:150,h:150}, quote:{w:180,h:120} };
+const VB_MIN_SIZE = 60, VB_MAX_SIZE = 420;
+
+function renderBoard(){
+  const board = document.getElementById('vbBoard');
+  board.classList.toggle('empty', visionItems.length===0);
+  board.innerHTML = visionItems.map(it=>{
+    const def = VB_DEFAULT_SIZE[it.type] || VB_DEFAULT_SIZE.quote;
+    const w = it.w || def.w, h = it.h || def.h;
+    const style = `left:${it.x}%; top:${it.y}%; width:${w}px; height:${h}px; transform:rotate(${it.rot||0}deg); z-index:${it.z||1};`;
+    const inner = it.type==='image' ? `<img src="${it.img}" alt="">` : esc(it.text);
+    return `<div class="vb-card ${it.type==='image'?'img':'quote'}" data-id="${it.id}" style="${style}">
+      <button class="vb-del" data-id="${it.id}" title="حذف">×</button>
+      ${inner}
+      <button class="vb-resize" data-id="${it.id}" title="تغيير الحجم"><svg><use href="#ic-resize"/></svg></button>
+    </div>`;
+  }).join('');
+
+  board.querySelectorAll('.vb-del').forEach(b=>{
+    b.addEventListener('click', (e)=>{ e.stopPropagation(); VisionStore.remove(b.dataset.id); });
+  });
+  board.querySelectorAll('.vb-card.quote').forEach(card=>{
+    card.addEventListener('dblclick', (e)=>{
+      if(e.target.closest('.vb-resize')||e.target.closest('.vb-del')) return;
+      const it = visionItems.find(x=>x.id===card.dataset.id);
+      if(it) showQuoteForm(it);
+    });
+  });
+
+  board.querySelectorAll('.vb-card').forEach(card=>{
+    let dragging=false, startX=0, startY=0, origLeft=0, origTop=0, rect;
+    card.addEventListener('pointerdown', (e)=>{
+      if(e.target.closest('.vb-del')||e.target.closest('.vb-resize')) return;
+      dragging = true;
+      card.classList.add('dragging');
+      try{ card.setPointerCapture(e.pointerId); }catch(err){}
+      rect = board.getBoundingClientRect();
+      startX = e.clientX; startY = e.clientY;
+      origLeft = parseFloat(card.style.left); origTop = parseFloat(card.style.top);
+      const maxZ = visionItems.reduce((m,it)=>Math.max(m,it.z||0),0);
+      card.style.zIndex = maxZ+1;
+    });
+    card.addEventListener('pointermove', (e)=>{
+      if(!dragging) return;
+      const dxPct = (e.clientX-startX)/rect.width*100;
+      const dyPct = (e.clientY-startY)/rect.height*100;
+      const cardWpct = card.offsetWidth/rect.width*100;
+      const cardHpct = card.offsetHeight/rect.height*100;
+      let nx = Math.min(100-cardWpct, Math.max(0, origLeft+dxPct));
+      let ny = Math.min(100-cardHpct, Math.max(0, origTop+dyPct));
+      card.style.left = nx+'%'; card.style.top = ny+'%';
+    });
+    card.addEventListener('pointerup', (e)=>{
+      if(!dragging) return;
+      dragging = false;
+      card.classList.remove('dragging');
+      const id = card.dataset.id;
+      const maxZ = visionItems.reduce((m,it)=>Math.max(m,it.z||0),0);
+      VisionStore.update(id, { x:parseFloat(card.style.left), y:parseFloat(card.style.top), z:maxZ+1 });
+    });
+  });
+
+  board.querySelectorAll('.vb-resize').forEach(handle=>{
+    let resizing=false, startX=0, startY=0, startW=0, startH=0;
+    const card = handle.closest('.vb-card');
+    handle.addEventListener('pointerdown', (e)=>{
+      e.stopPropagation();
+      resizing = true;
+      try{ handle.setPointerCapture(e.pointerId); }catch(err){}
+      startX = e.clientX; startY = e.clientY;
+      startW = card.offsetWidth; startH = card.offsetHeight;
+    });
+    handle.addEventListener('pointermove', (e)=>{
+      if(!resizing) return;
+      const nw = Math.min(VB_MAX_SIZE, Math.max(VB_MIN_SIZE, startW + (e.clientX-startX)));
+      const nh = Math.min(VB_MAX_SIZE, Math.max(VB_MIN_SIZE, startH + (e.clientY-startY)));
+      card.style.width = nw+'px'; card.style.height = nh+'px';
+    });
+    handle.addEventListener('pointerup', (e)=>{
+      if(!resizing) return;
+      resizing = false;
+      VisionStore.update(handle.dataset.id, { w:parseFloat(card.style.width), h:parseFloat(card.style.height) });
+    });
+  });
+}
+
+/* ================= render all ================= */
+function renderAll(){
+  renderGoals();
+  renderDaily();
+  renderPhoenix();
+  renderTracker();
+  renderHours();
+  renderBoard();
+}
+
+/* ================= boot ================= */
+async function boot(){
+  try{
+    if(window.claude && typeof window.claude.use === 'function'){
+      dbApi = await window.claude.use('db');
+    }
+  }catch(e){ dbApi = null; }
+
+  await maybeSeed();
+
+  GoalsStore.subscribe(arr=>{ goals = arr; renderAll(); });
+  ExtraStore.subscribe(arr=>{ dailyExtra = arr.sort((a,b)=>(a.order||0)-(b.order||0)); renderAll(); });
+  HabitsStore.subscribe(arr=>{ habits = arr.sort((a,b)=>(a.order||0)-(b.order||0)); renderAll(); });
+  CompletionsStore.subscribe(arr=>{
+    completions = {};
+    arr.forEach(c=>{ completions[c.date||c.id] = c; });
+    renderAll();
+  });
+  PlanStore.subscribe(doc=>{ dayBlocks = (doc&&doc.blocks)||[]; renderAll(); });
+  VisionStore.subscribe(arr=>{ visionItems = arr; renderAll(); });
+
+  renderAll();
+}
+boot();
+})();
+</script>
