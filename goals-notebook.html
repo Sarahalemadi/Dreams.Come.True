@@ -277,6 +277,7 @@ button:focus-visible,input:focus-visible,.chk:focus-visible{ outline:2px solid v
       <div class="month" id="heroMonth"></div>
       <div class="motto">تتحقق الأحلام إن عشنا لها</div>
       <div class="tag">بسم الله توكلت على الله</div>
+      <div class="faint" id="backendLabel" style="font-size:10.5px;margin-top:6px"></div>
     </div>
     <div class="ring-wrap">
       <svg width="52" height="52" viewBox="0 0 52 52">
@@ -414,9 +415,21 @@ button:focus-visible,input:focus-visible,.chk:focus-visible{ outline:2px solid v
   <button class="nav-btn" data-tab="hours"><svg><use href="#ic-clock"/></svg>الساعات</button>
 </nav>
 
+<script src="https://cdn.jsdelivr.net/npm/firebase@10.13.2/firebase-app-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/firebase@10.13.2/firebase-firestore-compat.js"></script>
 <script>
 (function(){
 "use strict";
+
+/* ================= Firebase (used only where window.claude isn't available, e.g. GitHub Pages) ================= */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyCiBTfkZXODno3liOw2jBo5V2LBtWInY4M",
+  authDomain: "sarahdreamstrue.firebaseapp.com",
+  projectId: "sarahdreamstrue",
+  storageBucket: "sarahdreamstrue.firebasestorage.app",
+  messagingSenderId: "407344439704",
+  appId: "1:407344439704:web:84d5b3d8625f2ddcaf4bed"
+};
 
 /* ================= utilities ================= */
 const AR_MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
@@ -479,15 +492,15 @@ function localSetArr(key,arr){ try{ localStorage.setItem(LOCAL_PREFIX+key, JSON.
 function localGetDoc(key,fallback){ try{ const v=localStorage.getItem(LOCAL_PREFIX+key); return v?JSON.parse(v):fallback; }catch(e){ return fallback; } }
 function localSetDoc(key,val){ try{ localStorage.setItem(LOCAL_PREFIX+key, JSON.stringify(val)); }catch(e){} }
 
-let dbApi = null;
+let remoteDb = null;
 const listeners = { goals:[], dailyExtra:[], habits:[], completions:[], visionItems:[] };
 
 function makeCollectionStore(name){
   return {
     subscribe(cb){
       listeners[name].push(cb);
-      if(dbApi){
-        return dbApi.collection(name).onSnapshot(snap=>{
+      if(remoteDb){
+        return remoteDb.collection(name).onSnapshot(snap=>{
           const arr = snap.docs.map(d=>Object.assign({id:d.id}, d.data()));
           cb(arr);
         }, ()=>{ cb(localGetArr(name)); });
@@ -497,17 +510,17 @@ function makeCollectionStore(name){
       }
     },
     async add(data){
-      if(dbApi){ await dbApi.collection(name).add(data); }
+      if(remoteDb){ await remoteDb.collection(name).add(data); }
       else{ const arr=localGetArr(name); const item=Object.assign({id:uid()},data); arr.push(item); localSetArr(name,arr); listeners[name].forEach(cb=>cb(arr)); }
     },
     async set(id,data){
-      if(dbApi){ await dbApi.collection(name).doc(id).set(data); }
+      if(remoteDb){ await remoteDb.collection(name).doc(id).set(data); }
       else{ const arr=localGetArr(name); const i=arr.findIndex(x=>x.id===id); const item=Object.assign({id},data); if(i>=0) arr[i]=item; else arr.push(item); localSetArr(name,arr); listeners[name].forEach(cb=>cb(arr)); }
     },
     async update(id,data){
-      if(dbApi){
-        try{ await dbApi.collection(name).doc(id).update(data); }
-        catch(e){ await dbApi.collection(name).doc(id).set(data); }
+      if(remoteDb){
+        try{ await remoteDb.collection(name).doc(id).update(data); }
+        catch(e){ await remoteDb.collection(name).doc(id).set(data); }
       } else {
         const arr=localGetArr(name); const i=arr.findIndex(x=>x.id===id);
         if(i>=0) arr[i]=Object.assign({},arr[i],data); else arr.push(Object.assign({id},data));
@@ -515,11 +528,11 @@ function makeCollectionStore(name){
       }
     },
     async remove(id){
-      if(dbApi){ await dbApi.collection(name).doc(id).delete(); }
+      if(remoteDb){ await remoteDb.collection(name).doc(id).delete(); }
       else{ const arr=localGetArr(name).filter(x=>x.id!==id); localSetArr(name,arr); listeners[name].forEach(cb=>cb(arr)); }
     },
     async getOnce(){
-      if(dbApi){ const snap = await dbApi.collection(name).get(); return snap.docs.map(d=>Object.assign({id:d.id},d.data())); }
+      if(remoteDb){ const snap = await remoteDb.collection(name).get(); return snap.docs.map(d=>Object.assign({id:d.id},d.data())); }
       return localGetArr(name);
     }
   };
@@ -528,13 +541,13 @@ function makeCollectionStore(name){
 function makeDocStore(path, fallback){
   return {
     subscribe(cb){
-      if(dbApi){
-        return dbApi.doc(path).onSnapshot(snap=>{ cb(snap.exists? snap.data(): fallback); }, ()=>cb(localGetDoc(path,fallback)));
+      if(remoteDb){
+        return remoteDb.doc(path).onSnapshot(snap=>{ cb(snap.exists? snap.data(): fallback); }, ()=>cb(localGetDoc(path,fallback)));
       } else { cb(localGetDoc(path,fallback)); return ()=>{}; }
     },
     async save(data){
-      if(dbApi){
-        const ref = dbApi.doc(path);
+      if(remoteDb){
+        const ref = remoteDb.doc(path);
         const cur = await ref.get();
         if(cur.exists) await ref.update(data); else await ref.set(data);
       } else { localSetDoc(path, Object.assign({}, localGetDoc(path,fallback), data)); }
@@ -567,8 +580,8 @@ async function toggleCompletion(itemKey, dateStr, value){
   completions[dateStr] = completions[dateStr] || {date:dateStr, items:{}};
   completions[dateStr].items[itemKey] = value;
   renderAll();
-  if(dbApi){
-    const ref = dbApi.collection('completions').doc(dateStr);
+  if(remoteDb){
+    const ref = remoteDb.collection('completions').doc(dateStr);
     try{
       const cur = await ref.get();
       if(cur.exists) await ref.update({items:{[itemKey]:value}});
@@ -1429,12 +1442,26 @@ function renderAll(){
 }
 
 /* ================= boot ================= */
+let backendLabel = 'محلي فقط';
 async function boot(){
   try{
     if(window.claude && typeof window.claude.use === 'function'){
-      dbApi = await window.claude.use('db');
+      remoteDb = await window.claude.use('db');
+      if(remoteDb) backendLabel = 'Claude';
     }
-  }catch(e){ dbApi = null; }
+  }catch(e){ remoteDb = null; }
+
+  if(!remoteDb){
+    try{
+      if(window.firebase && typeof firebase.initializeApp === 'function'){
+        const fbApp = (firebase.apps && firebase.apps.length) ? firebase.app() : firebase.initializeApp(FIREBASE_CONFIG);
+        remoteDb = firebase.firestore(fbApp);
+        backendLabel = 'Firebase';
+      }
+    }catch(e){ remoteDb = null; }
+  }
+  const bl = document.getElementById('backendLabel');
+  if(bl) bl.textContent = backendLabel==='محلي فقط' ? '📴 '+backendLabel : '☁️ '+backendLabel;
 
   await maybeSeed();
 
