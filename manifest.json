@@ -1,0 +1,19 @@
+{
+  "name": "دفتر الأهداف",
+  "short_name": "أحلامي",
+  "description": "تتحقق الأحلام إن عشنا لها — منظم أهداف، عادات، ولوحة أحلام.",
+  "start_url": "./goals-notebook.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#E7C79E",
+  "theme_color": "#E4552F",
+  "dir": "rtl",
+  "lang": "ar",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
